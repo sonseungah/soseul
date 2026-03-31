@@ -19,7 +19,7 @@
 
       <div class="form-group">
         <label>장르 <span class="required">*</span></label>
-        <select id="genre" oninput="updatePrice()">
+        <select id="genre">
           <option value="">선택하세요</option>
           <option value="판타지">판타지</option>
           <option value="현대 로맨스">현대 로맨스</option>
@@ -41,29 +41,25 @@
       <div class="form-group">
         <label>주요 배경 (장소)</label>
         <input type="text" id="setting"
-               placeholder="예: 조선 시대 한양, 2050년 서울, 마법 학교"
-               oninput="updatePrice()">
+               placeholder="예: 조선 시대 한양, 2050년 서울, 마법 학교">
       </div>
 
       <div class="form-group full">
         <label>등장인물 <span class="required">*</span></label>
         <textarea id="characters"
-                  placeholder="예: 주인공 — 이름, 나이, 직업, 성격, 외모 등&#10;조연 — 주인공과의 관계 포함해서 자유롭게 입력"
-                  oninput="updatePrice()"></textarea>
+                  placeholder="예: 주인공 — 이름, 나이, 직업, 성격, 외모 등&#10;조연 — 주인공과의 관계 포함해서 자유롭게 입력"></textarea>
       </div>
 
       <div class="form-group full">
         <label>핵심 사건 / 플롯 포인트 <span class="required">*</span></label>
         <textarea id="events"
-                  placeholder="예: 평범한 회사원이 교통사고로 죽고 악당 귀족으로 빙의된다. 이미 망해가는 귀족 가문을 살려야 한다."
-                  oninput="updatePrice()"></textarea>
+                  placeholder="예: 평범한 회사원이 교통사고로 죽고 악당 귀족으로 빙의된다. 이미 망해가는 귀족 가문을 살려야 한다."></textarea>
       </div>
 
       <div class="form-group full">
         <label>추가 조건 / 분위기 / 요청사항</label>
         <textarea id="conditions"
-                  placeholder="예: 주인공은 약자 보호 본능이 강함. 1인칭 시점으로 서술. 첫 장면은 깜짝 놀라게 시작해 주세요."
-                  oninput="updatePrice()"></textarea>
+                  placeholder="예: 주인공은 약자 보호 본능이 강함. 1인칭 시점으로 서술. 첫 장면은 깜짝 놀라게 시작해 주세요."></textarea>
       </div>
 
       <hr class="divider" style="grid-column:1/-1">
@@ -71,8 +67,7 @@
       <div class="form-group full">
         <label>앞부분 분량</label>
         <div class="length-slider-row">
-          <input type="range" id="lengthSlider" min="500" max="3000" step="500" value="1500"
-                 oninput="updateSliderLabel(); updatePrice()">
+          <input type="range" id="lengthSlider" min="500" max="3000" step="500" value="1500">
           <span class="length-label" id="sliderLabel">약 1500자</span>
         </div>
       </div>
@@ -107,7 +102,7 @@
     </div>
   </div>
 
-  <button class="generate-btn" id="generateBtn" onclick="generate()">🪄 소설 생성하기</button>
+  <button class="generate-btn" id="generateBtn">🪄 소설 생성하기</button>
   <div class="error-msg" id="errorMsg"></div>
 
   <!-- Output -->
@@ -119,12 +114,12 @@
           <div class="status-dot" id="statusDot"></div>
           <span id="statusText">대기 중</span>
         </div>
-        <button class="copy-btn" onclick="copyAll()">복사</button>
+        <button class="copy-btn" id="copyBtn">복사</button>
       </div>
 
       <div class="output-tabs">
-        <button class="tab-btn active" data-tab="outline" onclick="switchTab(this,'outline')">📋 전체 개요</button>
-        <button class="tab-btn" data-tab="opening" onclick="switchTab(this,'opening')">📖 소설 앞부분</button>
+        <button class="tab-btn active" data-tab="outline">📋 전체 개요</button>
+        <button class="tab-btn" data-tab="opening">📖 소설 앞부분</button>
       </div>
 
       <div class="tab-content active" id="tab-outline">

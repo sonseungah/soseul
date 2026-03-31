@@ -212,4 +212,25 @@ async function generate() {
   }
 }
 
-window.onload = () => { updateSliderLabel(); updatePrice(); };
+window.onload = () => {
+  updateSliderLabel();
+  updatePrice();
+
+  // 가격 업데이트
+  ['genre', 'setting', 'characters', 'events', 'conditions'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updatePrice);
+  });
+  document.getElementById('lengthSlider').addEventListener('input', () => {
+    updateSliderLabel();
+    updatePrice();
+  });
+
+  // 버튼
+  document.getElementById('generateBtn').addEventListener('click', generate);
+  document.getElementById('copyBtn').addEventListener('click', copyAll);
+
+  // 탭
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn, btn.dataset.tab));
+  });
+};
