@@ -26,6 +26,54 @@ Claude API를 활용해 장르, 인물, 배경, 사건을 입력하면 **전체 
 
 ---
 
+## 보안
+
+직접 운영하는 서비스를 가정하고 다음 보안 요소를 적용했습니다.
+
+### XSS 방어
+Claude API 응답을 `innerHTML`로 렌더링하기 때문에, 응답 내에 악성 HTML이 포함될 경우 스크립트가 실행될 수 있습니다. **DOMPurify**를 사용해 마크다운 렌더링 전 HTML을 살균(sanitize)하여 XSS 공격을 차단합니다.
+
+```js
+function renderMd(text) {
+  return DOMPurify.sanitize(marked.parse(text || ''));
+}
+```
+
+### Content Security Policy (CSP)
+인라인 스크립트 및 허가되지 않은 외부 리소스 로드를 차단하는 CSP 헤더를 서버에서 전송합니다. HTML의 모든 `onclick` / `oninput` 인라인 핸들러를 제거하고 `addEventListener`로 대체하여 CSP를 준수합니다.
+
+```
+Content-Security-Policy: default-src 'self';
+                         script-src 'self' cdn.jsdelivr.net;
+                         style-src 'self' 'unsafe-inline';
+                         connect-src 'self'
+```
+
+### 보안 헤더
+클릭재킹, MIME 스니핑 등 일반적인 웹 공격을 방어하는 HTTP 응답 헤더를 `SecurityHeadersFilter`에서 일괄 적용합니다.
+
+| 헤더 | 값 | 목적 |
+|------|----|------|
+| `X-Frame-Options` | `DENY` | 클릭재킹 방어 |
+| `X-Content-Type-Options` | `nosniff` | MIME 타입 스니핑 방어 |
+| `X-XSS-Protection` | `1; mode=block` | 브라우저 내장 XSS 필터 활성화 |
+
+### Rate Limiting
+API 키 비용 보호를 위해 IP 기반 요청 횟수를 제한합니다. `RateLimitFilter`에서 슬라이딩 윈도우 방식으로 구현했으며, 분당 5회를 초과하면 `429 Too Many Requests`를 반환합니다.
+
+### 서버 측 입력값 검증
+클라이언트 측 유효성 검사는 우회가 가능하므로, 서버에서도 각 입력 필드의 길이를 별도로 검증합니다.
+
+| 필드 | 최대 길이 |
+|------|-----------|
+| 장르 | 50자 |
+| 배경 | 500자 |
+| 등장인물 | 2,000자 |
+| 핵심 사건 | 2,000자 |
+| 추가 조건 | 1,000자 |
+
+---
+
 ## 시작하기
 
 ### 사전 준비
