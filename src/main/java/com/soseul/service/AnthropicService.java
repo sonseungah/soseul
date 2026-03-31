@@ -37,6 +37,8 @@ public class AnthropicService {
 
     public void streamToEmitter(GenerateRequest req, SseEmitter emitter) {
         try {
+            validateInput(req);
+
             if (apiKey == null || apiKey.isBlank()) {
                 emitter.send(SseEmitter.event().name("error")
                         .data("API 키가 설정되지 않았습니다. " +
@@ -117,6 +119,27 @@ public class AnthropicService {
         } catch (Exception e) {
             return body;
         }
+    }
+
+    private void validateInput(GenerateRequest req) {
+        if (req.getGenre() == null || req.getGenre().isBlank())
+            throw new IllegalArgumentException("장르를 선택해 주세요.");
+        if (req.getGenre().length() > 50)
+            throw new IllegalArgumentException("장르는 50자 이내여야 합니다.");
+        if (req.getCharacters() == null || req.getCharacters().isBlank())
+            throw new IllegalArgumentException("등장인물을 입력해 주세요.");
+        if (req.getCharacters().length() > 2000)
+            throw new IllegalArgumentException("등장인물 설명은 2000자 이내로 입력해 주세요.");
+        if (req.getEvents() == null || req.getEvents().isBlank())
+            throw new IllegalArgumentException("핵심 사건을 입력해 주세요.");
+        if (req.getEvents().length() > 2000)
+            throw new IllegalArgumentException("핵심 사건은 2000자 이내로 입력해 주세요.");
+        if (req.getSetting() != null && req.getSetting().length() > 500)
+            throw new IllegalArgumentException("배경 설명은 500자 이내로 입력해 주세요.");
+        if (req.getConditions() != null && req.getConditions().length() > 1000)
+            throw new IllegalArgumentException("추가 조건은 1000자 이내로 입력해 주세요.");
+        if (req.getLength() < 500 || req.getLength() > 3000)
+            throw new IllegalArgumentException("분량은 500자 ~ 3000자 사이여야 합니다.");
     }
 
     private String buildPrompt(GenerateRequest req) {

@@ -1,6 +1,6 @@
 // ── Markdown renderer ────────────────────────────────────
 function renderMd(text) {
-  return marked.parse(text || '');
+  return DOMPurify.sanitize(marked.parse(text || ''));
 }
 
 // ── Pricing constants ────────────────────────────────────
@@ -129,6 +129,7 @@ async function generate() {
     });
 
     if (!resp.ok) {
+      if (resp.status === 429) throw new Error('요청이 너무 많습니다. 1분 후 다시 시도해 주세요.');
       throw new Error(`서버 오류: HTTP ${resp.status}`);
     }
 
