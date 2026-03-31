@@ -1,0 +1,15 @@
+# Gradle
+.gradle/
+build/
+
+# API key / secrets
+src/main/resources/application.properties
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

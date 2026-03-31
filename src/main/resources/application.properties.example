@@ -1,0 +1,8 @@
+# Anthropic API Key
+anthropic.api-key=YOUR_API_KEY_HERE
+anthropic.model=claude-opus-4-6
+anthropic.max-tokens=16000
+
+server.port=8080
+
+spring.mvc.async.request-timeout=120000

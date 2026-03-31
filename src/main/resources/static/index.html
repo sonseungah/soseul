@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>소설 생성기</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>✍️ 소설 생성기</h1>
+    <p>장소, 인물, 사건, 장르를 입력하면 소설의 개요와 도입부를 생성합니다</p>
+  </header>
+
+  <div class="card">
+    <div class="card-title">소설 설정</div>
+    <div class="form-grid">
+
+      <div class="form-group">
+        <label>장르 <span class="required">*</span></label>
+        <select id="genre" oninput="updatePrice()">
+          <option value="">선택하세요</option>
+          <option value="판타지">판타지</option>
+          <option value="현대 로맨스">현대 로맨스</option>
+          <option value="역사 로맨스">역사 로맨스</option>
+          <option value="무협">무협</option>
+          <option value="SF / 사이언스 픽션">SF / 사이언스 픽션</option>
+          <option value="스릴러 / 미스터리">스릴러 / 미스터리</option>
+          <option value="공포 / 호러">공포 / 호러</option>
+          <option value="드라마">드라마</option>
+          <option value="액션 / 어드벤처">액션 / 어드벤처</option>
+          <option value="성장 소설">성장 소설</option>
+          <option value="회귀물">회귀물</option>
+          <option value="빙의물">빙의물</option>
+          <option value="이세계 전생">이세계 전생</option>
+          <option value="기타">기타</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>주요 배경 (장소)</label>
+        <input type="text" id="setting"
+               placeholder="예: 조선 시대 한양, 2050년 서울, 마법 학교"
+               oninput="updatePrice()">
+      </div>
+
+      <div class="form-group full">
+        <label>등장인물 <span class="required">*</span></label>
+        <textarea id="characters"
+                  placeholder="예: 주인공 — 이름, 나이, 직업, 성격, 외모 등&#10;조연 — 주인공과의 관계 포함해서 자유롭게 입력"
+                  oninput="updatePrice()"></textarea>
+      </div>
+
+      <div class="form-group full">
+        <label>핵심 사건 / 플롯 포인트 <span class="required">*</span></label>
+        <textarea id="events"
+                  placeholder="예: 평범한 회사원이 교통사고로 죽고 악당 귀족으로 빙의된다. 이미 망해가는 귀족 가문을 살려야 한다."
+                  oninput="updatePrice()"></textarea>
+      </div>
+
+      <div class="form-group full">
+        <label>추가 조건 / 분위기 / 요청사항</label>
+        <textarea id="conditions"
+                  placeholder="예: 주인공은 약자 보호 본능이 강함. 1인칭 시점으로 서술. 첫 장면은 깜짝 놀라게 시작해 주세요."
+                  oninput="updatePrice()"></textarea>
+      </div>
+
+      <hr class="divider" style="grid-column:1/-1">
+
+      <div class="form-group full">
+        <label>앞부분 분량</label>
+        <div class="length-slider-row">
+          <input type="range" id="lengthSlider" min="500" max="3000" step="500" value="1500"
+                 oninput="updateSliderLabel(); updatePrice()">
+          <span class="length-label" id="sliderLabel">약 1500자</span>
+        </div>
+      </div>
+
+      <!-- Price estimate -->
+      <div class="form-group full">
+        <div class="price-card">
+          <div class="price-card-header">
+            <span class="price-card-title">💰 예상 비용</span>
+            <span class="price-model-badge">Claude Opus 4.6</span>
+          </div>
+          <div class="price-rows">
+            <div class="price-item">
+              <div class="price-item-label">입력 토큰 (est.)</div>
+              <div class="price-item-value" id="estInput">—</div>
+            </div>
+            <div class="price-item">
+              <div class="price-item-label">출력 토큰 (est.)</div>
+              <div class="price-item-value" id="estOutput">—</div>
+            </div>
+            <div class="price-item total">
+              <div class="price-item-label">예상 비용</div>
+              <div class="price-item-value" id="estCost">—</div>
+            </div>
+          </div>
+          <div class="price-note">
+            * 한국어 1자 ≈ 1.5 토큰 기준 근사치 &nbsp;·&nbsp; 입력: $5/1M tok, 출력: $25/1M tok
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <button class="generate-btn" id="generateBtn" onclick="generate()">🪄 소설 생성하기</button>
+  <div class="error-msg" id="errorMsg"></div>
+
+  <!-- Output -->
+  <div class="output-section" id="outputSection">
+    <div class="card" style="margin-top:1.5rem">
+      <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem">
+        <div class="card-title" style="margin-bottom:0">생성 결과</div>
+        <div class="status-bar">
+          <div class="status-dot" id="statusDot"></div>
+          <span id="statusText">대기 중</span>
+        </div>
+        <button class="copy-btn" onclick="copyAll()">복사</button>
+      </div>
+
+      <div class="output-tabs">
+        <button class="tab-btn active" data-tab="outline" onclick="switchTab(this,'outline')">📋 전체 개요</button>
+        <button class="tab-btn" data-tab="opening" onclick="switchTab(this,'opening')">📖 소설 앞부분</button>
+      </div>
+
+      <div class="tab-content active" id="tab-outline">
+        <div class="output-box" id="outlineBox"></div>
+      </div>
+      <div class="tab-content" id="tab-opening">
+        <div class="output-box" id="openingBox"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>
